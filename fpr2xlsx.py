@@ -27,7 +27,7 @@ class Rule:
 		self.impact = float(impact)
 	
 	def calculateSeverity(self, confidence, prob):
-		if (prob != 0):
+		if (prob != -1):
 			self.probability = prob
 		likelihood = (self.accuracy * self.probability * confidence)/25
 		if self.impact >= 2.5:
