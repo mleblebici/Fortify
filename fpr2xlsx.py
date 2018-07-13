@@ -26,7 +26,9 @@ class Rule:
 		self.accuracy = float(accuracy)
 		self.impact = float(impact)
 	
-	def calculateSeverity(self, confidence):
+	def calculateSeverity(self, confidence, prob):
+		if (prob != 0):
+			self.probability = prob
 		likelihood = (self.accuracy * self.probability * confidence)/25
 		if self.impact >= 2.5:
 			if likelihood >= 2.5:
@@ -130,9 +132,12 @@ class FPR:
 			confidence = float(vuln.find('InstanceInfo/Confidence').text)
 			severity = Severity.LOW
 			self.extractRules()
+			probability = -1
+			if (vuln.find('InstanceInfo/MetaInfo') != None):
+				probability = float(vuln.find('InstanceInfo/MetaInfo/Group').text)
 			for rule in self.rules:
 				if rule.getRuleId() == classId:
-					severity = rule.calculateSeverity(confidence)
+					severity = rule.calculateSeverity(confidence, probability)
 					break
 			finding = Finding(kingdom, category, filename, severity, function, line)
 			self.findings.append(finding)
